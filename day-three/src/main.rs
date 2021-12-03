@@ -1,34 +1,52 @@
+pub fn parse(input: &str) -> (usize, Vec<usize>) {
+    let data = input
+        .lines()
+        .map(|s| usize::from_str_radix(s, 2).unwrap())
+        .collect::<Vec<_>>();
+    let max_bit_count = input
+        .lines()
+        .max_by(|a, b| a.len().cmp(&b.len()))
+        .unwrap()
+        .len();
+    (max_bit_count, data)
+}
+
+pub fn bit_is_set(v: usize, bit_num: usize) -> bool {
+    (v & (1 << bit_num)) != 0
+}
+
+pub fn set_bit(v: usize, bit_num: usize) -> usize {
+    v | (1 << bit_num)
+}
+
 mod part1 {
-    fn parse_line(line: &str, excess_ones: &mut Vec<i32>) {
-        if line.len() > excess_ones.len() {
-            excess_ones.resize(line.len(), 0);
-        }
-        for (i, c) in line.chars().enumerate() {
-            let index_to_update = line.len() - i - 1;
-            if c == '1' {
-                excess_ones[index_to_update] += 1;
+    use super::*;
+    fn process_data_value(value: usize, mut excess_ones: Vec<isize>) -> Vec<isize> {
+        for bit_num in 0..excess_ones.len() {
+            if bit_is_set(value, bit_num) {
+                excess_ones[bit_num] += 1;
             } else {
-                excess_ones[index_to_update] -= 1;
+                excess_ones[bit_num] -= 1;
             }
         }
-    }
-
-    pub fn parse(input: &str) -> Vec<i32> {
-        let mut excess_ones = Vec::<i32>::new();
-        input.lines().for_each(|s| parse_line(s, &mut excess_ones));
         excess_ones
     }
 
-    pub fn run(input: &str) -> u32 {
-        let excess_ones = parse(input);
+    pub fn run(input: &str) -> usize {
+        let (bit_count, data) = parse(input);
+        let excess_ones = data
+            .into_iter()
+            .fold(vec![0isize; bit_count], |excess_ones, value| {
+                process_data_value(value, excess_ones)
+            });
 
-        let (gamma, epsilon) = excess_ones.iter().enumerate().fold(
-            (0u32, 0u32),
+        let (gamma, epsilon) = excess_ones.into_iter().enumerate().fold(
+            (0usize, 0usize),
             |(gamma, epsilon), (bit_num, excess_ones)| {
-                if *excess_ones >= 0 {
-                    (gamma | 1 << bit_num, epsilon)
+                if excess_ones >= 0 {
+                    (set_bit(gamma, bit_num), epsilon)
                 } else {
-                    (gamma, epsilon | 1 << bit_num)
+                    (gamma, set_bit(epsilon, bit_num))
                 }
             },
         );
@@ -42,69 +60,53 @@ mod part1 {
 }
 
 mod part2 {
-    pub fn parse(input: &str) -> Vec<&str> {
-        input.lines().collect::<Vec<_>>()
-    }
+    use super::*;
 
-    pub fn most_common(lines: &[&str], index: usize) -> char {
-        let (ones, zeroes) = lines.iter().fold((0, 0), |(ones, zeroes), s| {
-            match s.as_bytes()[index] as char {
-                '1' => (ones + 1, zeroes),
-                '0' => (ones, zeroes + 1),
-                _ => (ones, zeroes),
+    pub fn most_common_bit_value(data: &[usize], bit_num: usize) -> bool {
+        let (ones, zeroes) = data.iter().fold((0, 0), |(ones, zeroes), v| {
+            if bit_is_set(*v, bit_num) {
+                (ones + 1, zeroes)
+            } else {
+                (ones, zeroes + 1)
             }
         });
-        if ones >= zeroes {
-            '1'
-        } else {
-            '0'
-        }
+        ones >= zeroes
     }
-    pub fn least_common(lines: &[&str], index: usize) -> char {
-        if most_common(lines, index) == '1' {
-            '0'
-        } else {
-            '1'
-        }
+    pub fn least_common_bit_value(data: &[usize], bit_num: usize) -> bool {
+        !most_common_bit_value(data, bit_num)
     }
 
-    pub fn parse_binary(line: &str) -> u32 {
-        line.chars()
-            .fold(0, |acc, c| if c == '1' { (acc << 1) | 1 } else { acc << 1 })
+    pub fn run(input: &str) -> usize {
+        let (bit_count, data) = parse(input);
+        get_oxy_rating(bit_count, data.clone()) * get_co2_rating(bit_count, data)
     }
 
-    pub fn run(input: &str) -> u32 {
-        let lines = parse(input);
-        let oxy_rating = get_oxy_rating(lines.clone());
-        let co2_rating = get_co2_rating(lines);
-        oxy_rating * co2_rating
+    fn filter_on_bit(bit_num: usize, should_keep_set_bits: bool, data: Vec<usize>) -> Vec<usize> {
+        data.into_iter()
+            .filter(|v| bit_is_set(*v, bit_num) == should_keep_set_bits)
+            .collect::<Vec<_>>()
     }
 
-    fn get_oxy_rating(mut lines: Vec<&str>) -> u32 {
-        let mut oxy_rating = 0u32;
-        for bit_num in 0..lines.first().unwrap().len() {
-            let digit_to_keep = most_common(&lines, bit_num) as u8;
-            lines = lines
-                .into_iter()
-                .filter(|s| s.as_bytes()[bit_num] == digit_to_keep)
-                .collect::<Vec<_>>();
-            if lines.len() == 1 {
-                oxy_rating = parse_binary(lines[0]);
+    fn get_oxy_rating(bit_count: usize, mut data: Vec<usize>) -> usize {
+        let mut oxy_rating = 0usize;
+        for bit_num in (0..bit_count).rev() {
+            let should_keep_set_bit = most_common_bit_value(&data, bit_num);
+            data = filter_on_bit(bit_num, should_keep_set_bit, data);
+            if data.len() == 1 {
+                oxy_rating = data[0];
                 break;
             }
         }
         oxy_rating
     }
-    fn get_co2_rating(mut lines: Vec<&str>) -> u32 {
-        let mut co2_rating = 0u32;
-        for bit_num in 0..lines.first().unwrap().len() {
-            let digit_to_keep = least_common(&lines, bit_num) as u8;
-            lines = lines
-                .into_iter()
-                .filter(|s| s.as_bytes()[bit_num] == digit_to_keep)
-                .collect::<Vec<_>>();
-            if lines.len() == 1 {
-                co2_rating = parse_binary(lines[0]);
+
+    fn get_co2_rating(bit_count: usize, mut data: Vec<usize>) -> usize {
+        let mut co2_rating = 0usize;
+        for bit_num in (0..bit_count).rev() {
+            let should_keep_set_bit = least_common_bit_value(&data, bit_num);
+            data = filter_on_bit(bit_num, should_keep_set_bit, data);
+            if data.len() == 1 {
+                co2_rating = data[0];
                 break;
             }
         }
@@ -118,24 +120,31 @@ mod part2 {
     }
     #[test]
     fn test_most_common() {
-        assert_eq!('1', most_common(&["1010", "1111", "0000"], 0));
-        assert_eq!('1', most_common(&["1010", "1111", "0000", "0110"], 1));
-        assert_eq!('0', most_common(&["1010", "1101", "0000", "0100"], 2));
+        assert_eq!(true, most_common_bit_value(&[0b1010, 0b1111, 0b0000], 3));
         assert_eq!(
-            '0',
-            most_common(
-                &["11110", "10110", "10111", "10101", "11100", "10000", "11001",],
-                1
+            true,
+            most_common_bit_value(&[0b1010, 0b1111, 0b0000, 0b0110], 2)
+        );
+        assert_eq!(
+            false,
+            most_common_bit_value(&[0b1010, 0b1101, 0b0000, 0b0100], 1)
+        );
+        assert_eq!(
+            false,
+            most_common_bit_value(
+                &[0b11110, 0b10110, 0b10111, 0b10101, 0b11100, 0b10000, 0b11001],
+                3
             )
         );
-        assert_eq!('0', least_common(&["1010", "1111", "0000"], 0));
-        assert_eq!('0', least_common(&["1010", "1111", "0000", "0110"], 1));
-        assert_eq!('1', least_common(&["1010", "1101", "0000", "0100"], 2));
-    }
-    #[test]
-    fn test_parse_binary() {
-        assert_eq!(10, parse_binary("1010"));
-        assert_eq!(0b10111101010, parse_binary("10111101010"));
+        assert_eq!(false, least_common_bit_value(&[0b1010, 0b1111, 0b0000], 3));
+        assert_eq!(
+            false,
+            least_common_bit_value(&[0b1010, 0b1111, 0b0000, 0b0110], 2)
+        );
+        assert_eq!(
+            true,
+            least_common_bit_value(&[0b1010, 0b1101, 0b0000, 0b0100], 1)
+        );
     }
 }
 fn main() {
