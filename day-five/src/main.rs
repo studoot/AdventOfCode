@@ -45,7 +45,10 @@ impl Line {
 }
 
 pub fn parse(input: &str) -> (Vec<Line>, (u32, u32)) {
-    let lines = input.lines().map(|s| Line::from_str(s).unwrap()).collect::<Vec<_>>();
+    let lines = input
+        .lines()
+        .map(|s| Line::from_str(s).unwrap())
+        .collect::<Vec<_>>();
     let (max_x, max_y) = lines.iter().fold((0, 0), |(max_x, max_y), this_line| {
         (max_x.max(this_line.start.x.max(this_line.end.x)), max_y.max(this_line.start.y.max(this_line.end.y)))
     });

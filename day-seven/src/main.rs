@@ -3,20 +3,29 @@ use std::iter::Iterator;
 use std::str::FromStr;
 
 fn parse(input: &str) -> Vec<usize> {
-    let mut v = input.lines().next().unwrap().split(',').map(|s| usize::from_str(s).unwrap()).collect::<Vec<_>>();
+    let mut v = input
+        .lines()
+        .next()
+        .unwrap()
+        .split(',')
+        .map(|s| usize::from_str(s).unwrap())
+        .collect::<Vec<_>>();
     v.sort_unstable();
     v
 }
 
-fn fuel_required(to_pos: usize, crabs: &[usize], fuel_for_distance:fn(usize)->usize) -> usize {
+fn fuel_required(to_pos: usize, crabs: &[usize], fuel_for_distance: fn(usize) -> usize) -> usize {
     crabs.iter().fold(0, |acc, crab| {
         let distance = max(*crab, to_pos) - min(*crab, to_pos);
         acc + fuel_for_distance(distance)
     })
 }
 
-fn fuel_required_for_all_crabs(crabs: &[usize], fuel_for_distance:fn(usize)->usize) -> usize {
-    (crabs[0]..=crabs[crabs.len() - 1]).map(|pos| fuel_required(pos, crabs, fuel_for_distance)).min().expect("No positions?")
+fn fuel_required_for_all_crabs(crabs: &[usize], fuel_for_distance: fn(usize) -> usize) -> usize {
+    (crabs[0]..=crabs[crabs.len() - 1])
+        .map(|pos| fuel_required(pos, crabs, fuel_for_distance))
+        .min()
+        .expect("No positions?")
 }
 
 mod part1 {

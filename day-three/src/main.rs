@@ -36,20 +36,19 @@ mod part1 {
         let (bit_count, data) = parse(input);
         let excess_ones = data
             .into_iter()
-            .fold(vec![0isize; bit_count], |excess_ones, value| {
-                process_data_value(value, excess_ones)
-            });
+            .fold(vec![0isize; bit_count], |excess_ones, value| process_data_value(value, excess_ones));
 
-        let (gamma, epsilon) = excess_ones.into_iter().enumerate().fold(
-            (0usize, 0usize),
-            |(gamma, epsilon), (bit_num, excess_ones)| {
-                if excess_ones >= 0 {
-                    (set_bit(gamma, bit_num), epsilon)
-                } else {
-                    (gamma, set_bit(epsilon, bit_num))
-                }
-            },
-        );
+        let (gamma, epsilon) =
+            excess_ones
+                .into_iter()
+                .enumerate()
+                .fold((0usize, 0usize), |(gamma, epsilon), (bit_num, excess_ones)| {
+                    if excess_ones >= 0 {
+                        (set_bit(gamma, bit_num), epsilon)
+                    } else {
+                        (gamma, set_bit(epsilon, bit_num))
+                    }
+                });
         gamma * epsilon
     }
     #[test]
@@ -63,13 +62,17 @@ mod part2 {
     use super::*;
 
     pub fn most_common_bit_value(data: &[usize], bit_num: usize) -> bool {
-        let (ones, zeroes) = data.iter().fold((0, 0), |(ones, zeroes), v| {
-            if bit_is_set(*v, bit_num) {
-                (ones + 1, zeroes)
-            } else {
-                (ones, zeroes + 1)
-            }
-        });
+        let (ones, zeroes) =
+            data.iter().fold(
+                (0, 0),
+                |(ones, zeroes), v| {
+                    if bit_is_set(*v, bit_num) {
+                        (ones + 1, zeroes)
+                    } else {
+                        (ones, zeroes + 1)
+                    }
+                },
+            );
         ones >= zeroes
     }
     pub fn least_common_bit_value(data: &[usize], bit_num: usize) -> bool {
@@ -121,40 +124,16 @@ mod part2 {
     #[test]
     fn test_most_common() {
         assert_eq!(true, most_common_bit_value(&[0b1010, 0b1111, 0b0000], 3));
-        assert_eq!(
-            true,
-            most_common_bit_value(&[0b1010, 0b1111, 0b0000, 0b0110], 2)
-        );
-        assert_eq!(
-            false,
-            most_common_bit_value(&[0b1010, 0b1101, 0b0000, 0b0100], 1)
-        );
-        assert_eq!(
-            false,
-            most_common_bit_value(
-                &[0b11110, 0b10110, 0b10111, 0b10101, 0b11100, 0b10000, 0b11001],
-                3
-            )
-        );
+        assert_eq!(true, most_common_bit_value(&[0b1010, 0b1111, 0b0000, 0b0110], 2));
+        assert_eq!(false, most_common_bit_value(&[0b1010, 0b1101, 0b0000, 0b0100], 1));
+        assert_eq!(false, most_common_bit_value(&[0b11110, 0b10110, 0b10111, 0b10101, 0b11100, 0b10000, 0b11001], 3));
         assert_eq!(false, least_common_bit_value(&[0b1010, 0b1111, 0b0000], 3));
-        assert_eq!(
-            false,
-            least_common_bit_value(&[0b1010, 0b1111, 0b0000, 0b0110], 2)
-        );
-        assert_eq!(
-            true,
-            least_common_bit_value(&[0b1010, 0b1101, 0b0000, 0b0100], 1)
-        );
+        assert_eq!(false, least_common_bit_value(&[0b1010, 0b1111, 0b0000, 0b0110], 2));
+        assert_eq!(true, least_common_bit_value(&[0b1010, 0b1101, 0b0000, 0b0100], 1));
     }
 }
 fn main() {
     let input_string = include_str!("../input.txt");
-    println!(
-        "Day  3 part 1 - power consumption = {}",
-        part1::run(input_string)
-    );
-    println!(
-        "Day  3 part 2 - life support rating = {}",
-        part2::run(input_string)
-    );
+    println!("Day  3 part 1 - power consumption = {}", part1::run(input_string));
+    println!("Day  3 part 2 - life support rating = {}", part2::run(input_string));
 }

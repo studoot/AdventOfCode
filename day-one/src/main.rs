@@ -20,9 +20,6 @@ fn main() {
         // eliminated from both sides of this, so we just need to see if `m[t] >
         // m[t-3]`.
         let count_larger = measurements.windows(4).filter(|s| s[3] > s[0]).count();
-        println!(
-            "Day  1 part 2 - rolling average depth increase count = {}",
-            count_larger
-        );
+        println!("Day  1 part 2 - rolling average depth increase count = {}", count_larger);
     }
 }

@@ -12,7 +12,12 @@ impl Fishes {
 
     fn parse(input: &str) -> Self {
         let mut fishes = [0; 9];
-        input.lines().next().unwrap().split(',').for_each(|s| fishes[usize::from_str(s).unwrap()] += 1);
+        input
+            .lines()
+            .next()
+            .unwrap()
+            .split(',')
+            .for_each(|s| fishes[usize::from_str(s).unwrap()] += 1);
         Fishes(fishes)
     }
 
@@ -86,10 +91,10 @@ mod part2 {
 }
 fn main() {
     let input_string = include_str!("../input.txt");
-    let part1_ans=part1::run(input_string);
+    let part1_ans = part1::run(input_string);
     println!("Day  6 part 1 - {}", part1_ans);
     assert_eq!(part1_ans, 360268);
-    let part2_ans=part2::run(input_string);
+    let part2_ans = part2::run(input_string);
     println!("Day  6 part 2 - {}", part2_ans);
     assert_eq!(part2_ans, 1632146183902);
 }

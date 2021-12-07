@@ -51,9 +51,11 @@ impl Board {
         self.1
     }
     pub fn unmarked_sum(&mut self) -> u32 {
-        self.0
-            .iter()
-            .fold(0, |acc, row| acc + row.iter().fold(0, |acc, p| acc + (if p.marked { 0 } else { p.number as u32 })))
+        self.0.iter().fold(0, |acc, row| {
+            acc + row
+                .iter()
+                .fold(0, |acc, p| acc + (if p.marked { 0 } else { p.number as u32 }))
+        })
     }
 
     pub fn winning_row(&self, row: usize) -> bool {
@@ -123,11 +125,21 @@ pub fn test_mark() {
 
 pub fn parse(input: &str) -> (Vec<u8>, Vec<Board>) {
     let mut ls = input.lines();
-    let calls = ls.next().unwrap().split(',').map(|s| u8::from_str(s).unwrap()).collect::<Vec<_>>();
+    let calls = ls
+        .next()
+        .unwrap()
+        .split(',')
+        .map(|s| u8::from_str(s).unwrap())
+        .collect::<Vec<_>>();
     let boards: Vec<_> = ls
         .chunks(6)
         .into_iter()
-        .map(|chunk| chunk.collect_tuple().map(|(_a, b, c, d, e, f)| Board::parse(&[b, c, d, e, f])).unwrap())
+        .map(|chunk| {
+            chunk
+                .collect_tuple()
+                .map(|(_a, b, c, d, e, f)| Board::parse(&[b, c, d, e, f]))
+                .unwrap()
+        })
         .collect::<Vec<_>>();
     (calls, boards)
 }
