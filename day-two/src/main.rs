@@ -12,19 +12,19 @@ pub enum Motion {
 }
 
 pub fn parse_motion(line: &str) -> Motion {
-    if line.starts_with("forward ") {
-        Motion::Forward(line[8..].parse::<i32>().unwrap())
-    } else if line.starts_with("down ") {
-        Motion::Down(line[5..].parse::<i32>().unwrap())
-    } else if line.starts_with("up ") {
-        Motion::Up(line[3..].parse::<i32>().unwrap())
+    if let Some(rest) = line.strip_prefix("forward ") {
+        Motion::Forward(rest.parse::<i32>().unwrap())
+    } else if let Some(rest) = line.strip_prefix("down ") {
+        Motion::Down(rest.parse::<i32>().unwrap())
+    } else if let Some(rest) = line.strip_prefix("up ") {
+        Motion::Up(rest.parse::<i32>().unwrap())
     } else {
         panic!("bad input line {}", line);
     }
 }
 
 pub fn parse(input: &str) -> Vec<Motion> {
-    input.lines().map(|s| parse_motion(s)).collect()
+    input.lines().map(parse_motion).collect()
 }
 
 pub mod part1 {
@@ -59,11 +59,9 @@ pub mod part2 {
         match motion {
             Motion::Down(aim_change) => Location(start.0, start.1, Aim(start.2 .0 + aim_change)),
             Motion::Up(aim_change) => Location(start.0, start.1, Aim(start.2 .0 - aim_change)),
-            Motion::Forward(pos_change) => Location(
-                Horizontal(start.0 .0 + pos_change),
-                Depth(start.1 .0 + (pos_change * start.2 .0)),
-                start.2,
-            ),
+            Motion::Forward(pos_change) => {
+                Location(Horizontal(start.0 .0 + pos_change), Depth(start.1 .0 + (pos_change * start.2 .0)), start.2)
+            }
         }
     }
 
@@ -79,19 +77,11 @@ fn main() {
     {
         use part1::*;
         let end = perform_motions(Location(Horizontal(0), Depth(0)), &motions);
-        println!(
-            "Day  2 part 1 - end location is {:?}, multiplied = {}",
-            end,
-            end.0 .0 * end.1 .0
-        );
+        println!("Day  2 part 1 - end location is {:?}, multiplied = {}", end, end.0 .0 * end.1 .0);
     }
     {
         use part2::*;
         let end = perform_motions(Location(Horizontal(0), Depth(0), Aim(0)), &motions);
-        println!(
-            "Day  2 part 2 - end location is {:?}, multiplied = {}",
-            end,
-            end.0 .0 * end.1 .0
-        );
+        println!("Day  2 part 2 - end location is {:?}, multiplied = {}", end, end.0 .0 * end.1 .0);
     }
 }

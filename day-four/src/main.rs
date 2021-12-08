@@ -1,8 +1,7 @@
 use itertools::Itertools;
 use std::str::FromStr;
 
-#[derive(Debug, PartialEq, Eq, Clone)]
-
+#[derive(Debug, PartialEq, Eq, Clone, Default)]
 pub struct Point {
     number: u8,
     marked: bool,
@@ -24,19 +23,13 @@ impl From<u8> for Point {
     }
 }
 
-impl Default for Point {
-    fn default() -> Self {
-        Point { number: 0, marked: false }
-    }
-}
-#[derive(Debug, PartialEq, Eq, Clone)]
+#[derive(Debug, Default, PartialEq, Eq, Clone)]
 pub struct Board([[Point; 5]; 5], bool);
 
 impl Board {
     pub fn parse(from: &[&str; 5]) -> Board {
         let mut b: Board = Default::default();
-        for l in 0..5 {
-            let s = from[l];
+        for (l, s) in from.iter().enumerate() {
             for (i, s) in s.split_ascii_whitespace().enumerate() {
                 b.0[l][i] = Point::from(u8::from_str(s).unwrap())
             }
@@ -82,27 +75,12 @@ impl Board {
 impl From<[[u8; 5]; 5]> for Board {
     fn from(ns: [[u8; 5]; 5]) -> Self {
         let mut b: Board = Default::default();
-        for i in 0..5 {
-            for j in 0..5 {
-                b.0[i][j] = Point::from(ns[i][j]);
+        for (i, row) in ns.iter().enumerate() {
+            for (j, n) in row.iter().enumerate() {
+                b.0[i][j] = Point::from(*n);
             }
         }
         b
-    }
-}
-
-impl Default for Board {
-    fn default() -> Self {
-        Board(
-            [
-                [Default::default(), Default::default(), Default::default(), Default::default(), Default::default()],
-                [Default::default(), Default::default(), Default::default(), Default::default(), Default::default()],
-                [Default::default(), Default::default(), Default::default(), Default::default(), Default::default()],
-                [Default::default(), Default::default(), Default::default(), Default::default(), Default::default()],
-                [Default::default(), Default::default(), Default::default(), Default::default(), Default::default()],
-            ],
-            false,
-        )
     }
 }
 

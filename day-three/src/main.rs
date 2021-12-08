@@ -22,11 +22,11 @@ pub fn set_bit(v: usize, bit_num: usize) -> usize {
 mod part1 {
     use super::*;
     fn process_data_value(value: usize, mut excess_ones: Vec<isize>) -> Vec<isize> {
-        for bit_num in 0..excess_ones.len() {
+        for (bit_num, current) in excess_ones.iter_mut().enumerate() {
             if bit_is_set(value, bit_num) {
-                excess_ones[bit_num] += 1;
+                *current += 1;
             } else {
-                excess_ones[bit_num] -= 1;
+                *current -= 1;
             }
         }
         excess_ones
