@@ -121,6 +121,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "day-twentytwo"
+version = "0.1.0"
+dependencies = [
+ "bitvec",
+ "itertools",
+]
+
+[[package]]
 name = "day-two"
 version = "0.1.0"
 
