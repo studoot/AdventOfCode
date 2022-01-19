@@ -20,8 +20,14 @@ fn parse(input: &str) -> Vec<HappinessChange> {
         .map(|l| {
             let caps = HAPPINESS_MATCHER.captures(l).unwrap();
             let person = caps.name("person").unwrap().as_str().to_owned();
-            let direction = if caps.name("direction").unwrap().as_str() == "gain" {1}else {-1};
-            let change = caps.name("amount").unwrap().as_str().parse::<isize>().unwrap() * direction;
+            let direction = if caps.name("direction").unwrap().as_str() == "gain" { 1 } else { -1 };
+            let change = caps
+                .name("amount")
+                .unwrap()
+                .as_str()
+                .parse::<isize>()
+                .unwrap()
+                * direction;
             let neighbour = caps.name("neighbour").unwrap().as_str().to_owned();
             HappinessChange { person, change, neighbour }
         })

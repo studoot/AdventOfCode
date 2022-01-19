@@ -53,17 +53,21 @@ mod part2 {
 
     pub fn run(input: &str, end_time: usize) -> usize {
         let reindeer = parse(input);
-        let mut reindeer_scores = vec![0;reindeer.len()];
+        let mut reindeer_scores = vec![0; reindeer.len()];
 
         for time in 1..=end_time {
-            let distances = reindeer.iter().map(|r|r.distance(time)).collect::<Vec<_>>();
+            let distances = reindeer
+                .iter()
+                .map(|r| r.distance(time))
+                .collect::<Vec<_>>();
             let max_distance = *distances.iter().max().unwrap();
-            distances.iter().enumerate().filter(|(_, d)| **d == max_distance).for_each(|(index, _)|reindeer_scores[index] += 1);
+            distances
+                .iter()
+                .enumerate()
+                .filter(|(_, d)| **d == max_distance)
+                .for_each(|(index, _)| reindeer_scores[index] += 1);
         }
-        reindeer_scores
-            .into_iter()
-            .max()
-            .unwrap()
+        reindeer_scores.into_iter().max().unwrap()
     }
 
     #[test]
