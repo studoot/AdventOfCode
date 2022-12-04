@@ -48,13 +48,9 @@ fn test_part2() {
     assert_eq!(part2_evaluate(TEST_INPUT_STRING), 4);
 }
 
-pub fn run() {
+pub fn run() -> Option<(usize, bool, usize, bool)> {
     let input_string = include_str!("./input.txt");
     let part1_answer = part1_evaluate(input_string);
     let part2_answer = part2_evaluate(input_string);
-    println!(
-        "Day 3, part 1 = {part1_answer} [{}], part 2 = {part2_answer} [{}]",
-        part1_answer == 477,
-        part2_answer == 830
-    );
+    Some((part1_answer, part1_answer == 477, part2_answer, part2_answer == 830))
 }

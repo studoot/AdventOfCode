@@ -50,14 +50,10 @@ fn test_part2() {
     assert_eq!(find_top_3_calories(&mut c), 45_000);
 }
 
-pub fn run() {
+pub fn run() -> Option<(usize, bool, usize, bool)> {
     let input_string = include_str!("./input.txt");
     let mut c = get_calories(input_string);
     let part1_answer = find_max_calories(&c);
     let part2_answer = find_top_3_calories(&mut c);
-    println!(
-        "Day 1, part 1 = {part1_answer} [{}], part 2 = {part2_answer} [{}]",
-        part1_answer == 71924,
-        part2_answer == 210406
-    );
+    Some((part1_answer, part1_answer == 71924, part2_answer, part2_answer == 210406))
 }

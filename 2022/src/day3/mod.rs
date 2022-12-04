@@ -1,5 +1,5 @@
-use std::collections::HashSet;
 use itertools::Itertools;
+use std::collections::HashSet;
 
 fn get_priority(c: u8) -> usize {
     (match c {
@@ -25,12 +25,13 @@ fn part1_evaluate(s: &str) -> usize {
 fn part2_evaluate(s: &str) -> usize {
     s.lines()
         .tuples::<(_, _, _)>()
-        .map(|(l1,l2,l3)| {
+        .map(|(l1, l2, l3)| {
             let s1 = l1.as_bytes().iter().collect::<HashSet<_>>();
             let s2 = l2.as_bytes().iter().collect::<HashSet<_>>();
             let s3 = l3.as_bytes().iter().collect::<HashSet<_>>();
             let s_inter = &s1 & &s2;
-            s_inter.intersection(&s3)
+            s_inter
+                .intersection(&s3)
                 .map(|c| get_priority(**c))
                 .sum::<usize>()
         })
@@ -56,13 +57,9 @@ fn test_part2() {
     assert_eq!(part2_evaluate(TEST_INPUT_STRING), 70);
 }
 
-pub fn run() {
+pub fn run() -> Option<(usize, bool, usize, bool)> {
     let input_string = include_str!("./input.txt");
     let part1_answer = part1_evaluate(input_string);
     let part2_answer = part2_evaluate(input_string);
-    println!(
-        "Day 3, part 1 = {part1_answer} [{}], part 2 = {part2_answer} [{}]",
-        part1_answer == 7917,
-        part2_answer == 2585
-    );
+    Some((part1_answer, part1_answer == 7917, part2_answer, part2_answer == 2585))
 }
