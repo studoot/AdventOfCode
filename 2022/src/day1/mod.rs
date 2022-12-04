@@ -6,9 +6,7 @@ fn get_calories(s: &str) -> Calories {
     s.lines()
         .group_by(|s| s.is_empty())
         .into_iter()
-        .filter_map(|(is_separator, g)| {
-            (!is_separator).then(|| g.map(|s| s.parse::<usize>().unwrap()).sum())
-        })
+        .filter_map(|(is_separator, g)| (!is_separator).then(|| g.map(|s| s.parse::<usize>().unwrap()).sum()))
         .collect::<Vec<_>>()
 }
 

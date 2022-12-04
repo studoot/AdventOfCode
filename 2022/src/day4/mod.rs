@@ -4,14 +4,8 @@ fn evaluate(s: &str, f: fn((usize, usize), (usize, usize)) -> bool) -> usize {
             let (e1, e2) = line.split_once(',').unwrap();
             let (e1_begin, e1_end) = e1.split_once('-').unwrap();
             let (e2_begin, e2_end) = e2.split_once('-').unwrap();
-            let e1 = (
-                e1_begin.parse::<usize>().unwrap(),
-                e1_end.parse::<usize>().unwrap(),
-            );
-            let e2 = (
-                e2_begin.parse::<usize>().unwrap(),
-                e2_end.parse::<usize>().unwrap(),
-            );
+            let e1 = (e1_begin.parse::<usize>().unwrap(), e1_end.parse::<usize>().unwrap());
+            let e2 = (e2_begin.parse::<usize>().unwrap(), e2_end.parse::<usize>().unwrap());
             f(e1, e2)
         })
         .count()
@@ -24,9 +18,7 @@ fn part1_evaluate(s: &str) -> usize {
 }
 
 fn part2_evaluate(s: &str) -> usize {
-    evaluate(s, |(e1_begin, e1_end), (e2_begin, e2_end)| {
-        e1_begin.max(e2_begin) <= e1_end.min(e2_end)
-    })
+    evaluate(s, |(e1_begin, e1_end), (e2_begin, e2_end)| e1_begin.max(e2_begin) <= e1_end.min(e2_end))
 }
 
 #[cfg(test)]
