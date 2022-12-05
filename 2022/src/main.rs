@@ -27,18 +27,20 @@ mod day05;
 // mod day24;
 // mod day25;
 
-fn time<T: Display>(day_number: usize, f: &dyn Fn() -> Option<(T, bool, T, bool)>) {
+fn time<T: Display>(day_number: usize, f: &dyn Fn() -> Option<(T, bool, T, bool)>) -> u128 {
     let now = std::time::Instant::now();
     let output = f();
     let duration = now.elapsed().as_micros();
     if let Some((part1_answer, part1_good, part2_answer, part2_good)) = output {
         println!("Day {day_number}, part 1 = {part1_answer} [{part1_good}], part 2 = {part2_answer} [{part2_good}] - took {duration} microseconds");
+        duration
     } else {
         println!("Day {day_number} not yet implemented");
+        0
     }
 }
 
-fn dispatch_day(day_number: usize) {
+fn dispatch_day(day_number: usize) -> u128 {
     let oob = || None;
     match day_number {
         1 => time(day_number, &day01::run),
@@ -74,8 +76,7 @@ fn main() {
     if let Some(day_string) = env::args().nth(1) {
         dispatch_day(day_string.parse::<usize>().unwrap());
     } else {
-        for day_number in 1..=25 {
-            dispatch_day(day_number);
-        }
+        let total_time = (1..=25).map(dispatch_day).sum::<u128>();
+        println!("Took {total_time} microseconds");
     }
 }
