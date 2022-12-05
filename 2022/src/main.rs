@@ -1,15 +1,15 @@
 use std::env;
 use std::fmt::Display;
 
-mod day1;
-mod day2;
-mod day3;
-mod day4;
-mod day5;
-// mod day6;
-// mod day7;
-// mod day8;
-// mod day9;
+mod day01;
+mod day02;
+mod day03;
+mod day04;
+mod day05;
+// mod day06;
+// mod day07;
+// mod day08;
+// mod day09;
 // mod day10;
 // mod day11;
 // mod day12;
@@ -41,15 +41,15 @@ fn time<T: Display>(day_number: usize, f: &dyn Fn() -> Option<(T, bool, T, bool)
 fn dispatch_day(day_number: usize) {
     let oob = || None;
     match day_number {
-        1 => time(day_number, &day1::run),
-        2 => time(day_number, &day2::run),
-        3 => time(day_number, &day3::run),
-        4 => time(day_number, &day4::run),
-        5 => time(day_number, &day5::run),
-        // 6 => time(day_number, &day6::run),
-        // 7 => time(day_number, &day7::run),
-        // 8 => time(day_number, &day8::run),
-        // 9 => time(day_number, &day9::run),
+        1 => time(day_number, &day01::run),
+        2 => time(day_number, &day02::run),
+        3 => time(day_number, &day03::run),
+        4 => time(day_number, &day04::run),
+        5 => time(day_number, &day05::run),
+        // 6 => time(day_number, &day06::run),
+        // 7 => time(day_number, &day07::run),
+        // 8 => time(day_number, &day08::run),
+        // 9 => time(day_number, &day09::run),
         // 10 => time(day_number, &day10::run),
         // 11 => time(day_number, &day11::run),
         // 12 => time(day_number, &day12::run),
