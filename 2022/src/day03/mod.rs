@@ -1,5 +1,4 @@
 use itertools::Itertools;
-use std::collections::HashSet;
 
 fn get_priority(c: u8) -> usize {
     (match c {
@@ -9,15 +8,21 @@ fn get_priority(c: u8) -> usize {
     }) as usize
 }
 
+fn get_priority_set(s:&str) -> u64 {
+    let mut set: u64 = 0;
+    s.as_bytes().iter().for_each(|b| {set |= 1u64 << get_priority(*b);});
+    set
+}
+
 fn part1_evaluate(s: &str) -> usize {
     s.lines()
         .map(|line| {
             let (comp1, comp2) = line.split_at(line.len() / 2);
-            let s1 = comp1.as_bytes().iter().collect::<HashSet<_>>();
-            let s2 = comp2.as_bytes().iter().collect::<HashSet<_>>();
-            s1.intersection(&s2)
-                .map(|c| get_priority(**c))
-                .sum::<usize>()
+            let s1 = get_priority_set(comp1);
+            let s2 = get_priority_set(comp2);
+            let s_inter = s1 & s2;
+            assert_eq!(s_inter.count_ones(), 1);
+            s_inter.trailing_zeros() as usize
         })
         .sum()
 }
@@ -26,14 +31,12 @@ fn part2_evaluate(s: &str) -> usize {
     s.lines()
         .tuples::<(_, _, _)>()
         .map(|(l1, l2, l3)| {
-            let s1 = l1.as_bytes().iter().collect::<HashSet<_>>();
-            let s2 = l2.as_bytes().iter().collect::<HashSet<_>>();
-            let s3 = l3.as_bytes().iter().collect::<HashSet<_>>();
-            let s_inter = &s1 & &s2;
-            s_inter
-                .intersection(&s3)
-                .map(|c| get_priority(**c))
-                .sum::<usize>()
+            let s1 = get_priority_set(l1);
+            let s2 = get_priority_set(l2);
+            let s3 = get_priority_set(l3);
+            let s_inter = s1 & s2 & s3;
+            assert_eq!(s_inter.count_ones(), 1);
+            s_inter.trailing_zeros() as usize
         })
         .sum()
 }
