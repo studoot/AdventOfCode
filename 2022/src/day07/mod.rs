@@ -1,6 +1,5 @@
 #[derive(Debug)]
 struct Dir {
-    name: String,
     file_size: u64,
     dirs: Vec<usize>,
     parent: usize,
@@ -18,12 +17,12 @@ struct Filesystem {
 impl Filesystem {
     fn new() -> Self {
         let mut new_fs = Filesystem { dirs: vec![] };
-        new_fs.dirs.push(Dir::new("/", FILESYSTEM_ROOT_ID));
+        new_fs.dirs.push(Dir::new(FILESYSTEM_ROOT_ID));
         new_fs
     }
-    fn mkdir<S: Into<String>>(&mut self, name: S, parent: usize) -> usize {
+    fn mkdir(&mut self, parent: usize) -> usize {
         let new_dir_id = self.dirs.len();
-        self.dirs.push(Dir::new(name, parent));
+        self.dirs.push(Dir::new(parent));
         self.get_dir_mut(parent).dirs.push(new_dir_id);
         new_dir_id
     }
@@ -36,8 +35,8 @@ impl Filesystem {
 }
 
 impl Dir {
-    fn new<S: Into<String>>(name: S, parent: usize) -> Self {
-        Dir { name: name.into(), file_size: 0, dirs: Vec::new(), parent }
+    fn new(parent: usize) -> Self {
+        Dir { file_size: 0, dirs: Vec::new(), parent }
     }
     fn total_size(&self, fs: &Filesystem) -> u64 {
         self.file_size
@@ -46,12 +45,6 @@ impl Dir {
                 .iter()
                 .map(|d| fs.get_dir(*d).total_size(fs))
                 .sum::<u64>()
-    }
-    fn child<'a, S: AsRef<str>>(&'a self, name: S, fs: &'a Filesystem) -> Option<usize> {
-        self.dirs
-            .iter()
-            .copied()
-            .find(|id| fs.get_dir(*id).name.as_str() == name.as_ref())
     }
     fn mkfile(&mut self, size: u64) {
         self.file_size += size
@@ -72,25 +65,14 @@ fn parse(s: &str) -> Filesystem {
                     Some("cd") => match tokens.next() {
                         Some("/") => cwd = FILESYSTEM_ROOT_ID,
                         Some("..") => cwd = fs.get_dir(cwd).parent,
-                        Some(dir_name) => {
-                            cwd = fs
-                                .get_dir(cwd)
-                                .child(dir_name, &fs)
-                                .unwrap_or_else(|| panic!("Found subdirectory {dir_name}"));
-                        }
+                        Some(_) => cwd = fs.mkdir(cwd),
                         None => panic!("Expect directory name in {l}"),
                     },
                     Some(_) => panic!("Bad command in {l}"),
                     None => panic!("Expect command in {l}"),
                 }
             }
-            Some("dir") => {
-                // Directory entry
-                let child_name = tokens
-                    .next()
-                    .unwrap_or_else(|| panic!("dir has a name in {l}"));
-                fs.mkdir(child_name, cwd);
-            }
+            Some("dir") => {}
             Some(maybe_size) => {
                 // File entry
                 match maybe_size.parse::<u64>() {
