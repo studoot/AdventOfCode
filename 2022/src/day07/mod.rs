@@ -1,13 +1,7 @@
 #[derive(Debug)]
-struct File {
-    _name: String,
-    size: u64,
-}
-
-#[derive(Debug)]
 struct Dir {
     name: String,
-    files: Vec<File>,
+    file_size: u64,
     dirs: Vec<usize>,
     parent: usize,
 }
@@ -43,10 +37,10 @@ impl Filesystem {
 
 impl Dir {
     fn new<S: Into<String>>(name: S, parent: usize) -> Self {
-        Dir { name: name.into(), files: Vec::new(), dirs: Vec::new(), parent }
+        Dir { name: name.into(), file_size: 0, dirs: Vec::new(), parent }
     }
     fn total_size(&self, fs: &Filesystem) -> u64 {
-        self.files.iter().map(|f| f.size).sum::<u64>()
+        self.file_size
             + self
                 .dirs
                 .iter()
@@ -59,8 +53,8 @@ impl Dir {
             .copied()
             .find(|id| fs.get_dir(*id).name.as_str() == name.as_ref())
     }
-    fn mkfile<S: Into<String>>(&mut self, name: S, size: u64) {
-        self.files.push(File { _name: name.into(), size })
+    fn mkfile(&mut self, size: u64) {
+        self.file_size += size
     }
 }
 
@@ -100,14 +94,7 @@ fn parse(s: &str) -> Filesystem {
             Some(maybe_size) => {
                 // File entry
                 match maybe_size.parse::<u64>() {
-                    Ok(size) => {
-                        fs.get_dir_mut(cwd).mkfile(
-                            tokens
-                                .next()
-                                .unwrap_or_else(|| panic!("file has a name in {l}")),
-                            size,
-                        );
-                    }
+                    Ok(size) => fs.get_dir_mut(cwd).mkfile(size),
                     _ => panic!("Bad input line {l}"),
                 }
             }
