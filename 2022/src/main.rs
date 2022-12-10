@@ -10,7 +10,7 @@ mod day06;
 mod day07;
 mod day08;
 mod day09;
-// mod day10;
+mod day10;
 // mod day11;
 // mod day12;
 // mod day13;
@@ -27,7 +27,7 @@ mod day09;
 // mod day24;
 // mod day25;
 
-fn time<T: Display>(day_number: usize, f: &dyn Fn() -> Option<(T, bool, T, bool)>) -> u128 {
+fn time<T: Display, U: Display>(day_number: usize, f: &dyn Fn() -> Option<(T, bool, U, bool)>) -> u128 {
     let now = std::time::Instant::now();
     let output = f();
     let duration = now.elapsed().as_micros();
@@ -52,7 +52,7 @@ fn dispatch_day(day_number: usize) -> u128 {
         7 => time(day_number, &day07::run),
         8 => time(day_number, &day08::run),
         9 => time(day_number, &day09::run),
-        // 10 => time(day_number, &day10::run),
+        10 => time(day_number, &day10::run),
         // 11 => time(day_number, &day11::run),
         // 12 => time(day_number, &day12::run),
         // 13 => time(day_number, &day13::run),
@@ -68,7 +68,7 @@ fn dispatch_day(day_number: usize) -> u128 {
         // 23 => time(day_number, &day23::run),
         // 24 => time(day_number, &day24::run),
         // 25 => time(day_number, &day25::run),
-        _ => time::<bool>(day_number, &oob),
+        _ => time::<bool, bool>(day_number, &oob),
     }
 }
 
