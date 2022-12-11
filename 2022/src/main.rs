@@ -11,7 +11,7 @@ mod day07;
 mod day08;
 mod day09;
 mod day10;
-// mod day11;
+mod day11;
 // mod day12;
 // mod day13;
 // mod day14;
@@ -53,7 +53,7 @@ fn dispatch_day(day_number: usize) -> u128 {
         8 => time(day_number, &day08::run),
         9 => time(day_number, &day09::run),
         10 => time(day_number, &day10::run),
-        // 11 => time(day_number, &day11::run),
+        11 => time(day_number, &day11::run),
         // 12 => time(day_number, &day12::run),
         // 13 => time(day_number, &day13::run),
         // 14 => time(day_number, &day14::run),
