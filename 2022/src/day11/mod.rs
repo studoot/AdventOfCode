@@ -21,15 +21,6 @@ enum Operand {
     Value(usize),
 }
 
-impl Operand {
-    fn value(&self, old: usize) -> usize {
-        match self {
-            Operand::Old => old,
-            Operand::Value(v) => *v,
-        }
-    }
-}
-
 impl FromStr for Operand {
     type Err = ParseErrors;
     fn from_str(s: &str) -> Result<Self, Self::Err> {
@@ -47,15 +38,6 @@ impl FromStr for Operand {
 enum Inspection {
     Add(Operand, Operand),
     Multiply(Operand, Operand),
-}
-
-impl Inspection {
-    fn inspect(&self, old: usize) -> usize {
-        match self {
-            Inspection::Add(l, r) => l.value(old) + r.value(old),
-            Inspection::Multiply(l, r) => l.value(old) * r.value(old),
-        }
-    }
 }
 
 impl FromStr for Inspection {
@@ -100,25 +82,21 @@ impl ThrowTo {
     }
 }
 
-#[derive(Debug)]
 struct Monkey {
     id: usize,
     initial_items: Vec<Item>,
-    inspection: Inspection,
+    inspection: Box<dyn Fn(usize) -> usize>,
     throw_to: ThrowTo,
     inspection_count: usize,
-    worry_div_factor: usize,
-    worry_mod_factor: usize,
+    // worry_div_factor: usize,
+    // worry_mod_factor: usize,
+    deworrier: Box<dyn Fn(usize) -> usize>,
 }
 
 impl Monkey {
-    fn inspect(&mut self, item: &mut Item) {
-        item.worry_level = self.inspection.inspect(item.worry_level);
-        self.inspection_count += 1;
-    }
     fn process_item(&mut self, item: &mut Item) {
-        self.inspect(item);
-        item.worry_level = (item.worry_level / self.worry_div_factor) % self.worry_mod_factor;
+        self.inspection_count += 1;
+        item.worry_level = (self.deworrier)((self.inspection)(item.worry_level));
         item.owner = self.throw_to.throw(item);
     }
     fn process_items(&mut self, items: &mut Vec<Item>) {
@@ -161,6 +139,21 @@ impl FromStr for Monkey {
             .ok_or(Self::Err::Monkey)
             .and_then(Inspection::from_str)?;
 
+        let inspection: Box<dyn Fn(usize) -> usize> = match &inspection {
+            Inspection::Add(l, r) => match (l, r) {
+                (&Operand::Old, &Operand::Old) => Box::new(|old| 2 * old),
+                (&Operand::Old, &Operand::Value(v)) => Box::new(move |old| old + v),
+                (&Operand::Value(v), &Operand::Old) => Box::new(move |old| v + old),
+                (&Operand::Value(v1), &Operand::Value(v2)) => Box::new(move |_old| v1 + v2),
+            },
+            Inspection::Multiply(l, r) => match (l, r) {
+                (&Operand::Old, &Operand::Old) => Box::new(|old| old * old),
+                (&Operand::Old, &Operand::Value(v)) => Box::new(move |old| old * v),
+                (&Operand::Value(v), &Operand::Old) => Box::new(move |old| v * old),
+                (&Operand::Value(v1), &Operand::Value(v2)) => Box::new(move |_old| v1 * v2),
+            },
+        };
+
         let divisor = line
             .next()
             .and_then(|s| s.trim().strip_prefix("Test: divisible by "))
@@ -185,8 +178,7 @@ impl FromStr for Monkey {
             inspection,
             throw_to: ThrowTo { divisor, if_true, if_false },
             inspection_count: 0,
-            worry_div_factor: 3,
-            worry_mod_factor: usize::MAX,
+            deworrier: Box::new(|old| old/3),
         })
     }
 }
@@ -228,8 +220,7 @@ fn part2_evaluate(s: &str) -> usize {
         .map(|m| m.throw_to.divisor)
         .product::<usize>();
     monkeys.iter_mut().for_each(|m| {
-        m.worry_div_factor = 1;
-        m.worry_mod_factor = worry_mod_factor;
+        m.deworrier = Box::new(move |old| old % worry_mod_factor);
     });
 
     for _ in 0..10_000 {
@@ -237,6 +228,7 @@ fn part2_evaluate(s: &str) -> usize {
             m.process_items(&mut items);
         }
     }
+
     monkeys
         .into_iter()
         .map(|m| m.inspection_count)
