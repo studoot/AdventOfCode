@@ -12,6 +12,7 @@ path = "src/lib.rs"
 [dependencies]
 itertools = "0.10.5"
 ndarray = "0.15.6"
+nom = "7.1.1"
 
 [dev-dependencies]
 criterion = "0.4.0"
