@@ -75,54 +75,27 @@ fn parse(s: &str) -> Vec<Sensor> {
 }
 
 #[allow(clippy::reversed_empty_ranges)]
-fn get_covered_points(sensors: &Vec<Sensor>, row: isize, range: &RangeInclusive<isize>) -> Vec<RangeInclusive<isize>> {
-    let mut all_covered_points = Vec::<RangeInclusive<isize>>::new();
+fn get_covered_ranges(
+    sensors: &Vec<Sensor>,
+    row: isize,
+    range: &RangeInclusive<isize>,
+    out: &mut Vec<RangeInclusive<isize>>,
+) {
+    out.clear();
     for s in sensors {
         let (covered_points, _) = s.scanned_points(row);
         if let Some(mut covered_points) = covered_points {
-            if covered_points.start() < range.start() {
-                covered_points = *range.start()..=*covered_points.end();
-            }
-            if covered_points.end() > range.end() {
-                covered_points = *covered_points.start()..=*range.end();
-            }
-            for r in &mut all_covered_points {
+            covered_points = *covered_points.start().max(range.start())..=*covered_points.end().min(range.end());
+            for r in out.iter_mut() {
                 if covered_points.start().max(r.start()) <= covered_points.end().min(r.end()) {
                     covered_points = (*covered_points.start()).min(*r.start())..=(*covered_points.end()).max(*r.end());
                     *r = 1..=0;
                 }
             }
-            all_covered_points.push(covered_points);
+            out.push(covered_points);
         }
     }
-    all_covered_points
-}
-
-#[allow(clippy::reversed_empty_ranges)]
-fn get_covered_point_count(sensors: &Vec<Sensor>, row: isize, range: &RangeInclusive<isize>) -> usize {
-    let mut all_covered_points = Vec::<RangeInclusive<isize>>::new();
-    for s in sensors {
-        let (covered_points, _) = s.scanned_points(row);
-        if let Some(mut covered_points) = covered_points {
-            if covered_points.start() < range.start() {
-                covered_points = *range.start()..=*covered_points.end();
-            }
-            if covered_points.end() > range.end() {
-                covered_points = *covered_points.start()..=*range.end();
-            }
-            for r in &mut all_covered_points {
-                if covered_points.start().max(r.start()) <= covered_points.end().min(r.end()) {
-                    covered_points = (*covered_points.start()).min(*r.start())..=(*covered_points.end()).max(*r.end());
-                    *r = 1..=0;
-                }
-            }
-            all_covered_points.push(covered_points);
-        }
-    }
-    all_covered_points
-        .into_iter()
-        .map(|r| if r.is_empty() { 0 } else { r.end() - r.start() + 1 })
-        .sum::<isize>() as usize
+    out.retain(|r| !r.is_empty());
 }
 
 #[allow(clippy::reversed_empty_ranges)]
@@ -170,17 +143,11 @@ fn part1_evaluate(s: &str, row: isize) -> usize {
 fn part2_evaluate(s: &str, coord_range: RangeInclusive<isize>) -> usize {
     let sensors = parse(s);
 
-    let row_point_count = coord_range.end() - coord_range.start() + 1;
-
+    let mut all_covered_points = Vec::<RangeInclusive<isize>>::new();
     for y in coord_range.clone() {
-        if get_covered_point_count(&sensors, y, &coord_range) < row_point_count as usize {
-            let covered_ranges = get_covered_points(&sensors, y, &coord_range)
-                .into_iter()
-                .filter(|r| !r.is_empty())
-                .collect::<Vec<_>>();
-
-            assert_eq!(covered_ranges.len(), 2);
-            let missing_x = covered_ranges[0].start().max(covered_ranges[1].start()) - 1;
+        get_covered_ranges(&sensors, y, &coord_range, &mut all_covered_points);
+        if all_covered_points.len() == 2 {
+            let missing_x = all_covered_points[0].start().max(all_covered_points[1].start()) - 1;
             return ((missing_x * 4_000_000) + y) as usize;
         }
     }
