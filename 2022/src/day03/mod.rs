@@ -8,9 +8,11 @@ fn get_priority(c: u8) -> usize {
     }) as usize
 }
 
-fn get_priority_set(s:&str) -> u64 {
+fn get_priority_set(s: &str) -> u64 {
     let mut set: u64 = 0;
-    s.as_bytes().iter().for_each(|b| {set |= 1u64 << get_priority(*b);});
+    s.as_bytes().iter().for_each(|b| {
+        set |= 1u64 << get_priority(*b);
+    });
     set
 }
 

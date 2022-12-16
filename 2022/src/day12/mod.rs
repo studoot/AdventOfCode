@@ -95,7 +95,9 @@ fn part1_evaluate(s: &str) -> usize {
 fn part2_evaluate(s: &str) -> usize {
     let (mut points, _, end, mut lowest_points) = parse_grid(s);
 
-    lowest_points.iter().for_each(|p| points.cell_mut(*p).expect("part2_evaluate.1").step_count = Some(0));
+    lowest_points
+        .iter()
+        .for_each(|p| points.cell_mut(*p).expect("part2_evaluate.1").step_count = Some(0));
     while !lowest_points.is_empty() {
         lowest_points = move_from(&mut points, &lowest_points);
     }

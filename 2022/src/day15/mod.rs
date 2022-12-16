@@ -147,7 +147,10 @@ fn part2_evaluate(s: &str, coord_range: RangeInclusive<isize>) -> usize {
     for y in coord_range.clone() {
         get_covered_ranges(&sensors, y, &coord_range, &mut all_covered_points);
         if all_covered_points.len() == 2 {
-            let missing_x = all_covered_points[0].start().max(all_covered_points[1].start()) - 1;
+            let missing_x = all_covered_points[0]
+                .start()
+                .max(all_covered_points[1].start())
+                - 1;
             return ((missing_x * 4_000_000) + y) as usize;
         }
     }

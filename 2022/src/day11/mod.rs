@@ -178,7 +178,7 @@ impl FromStr for Monkey {
             inspection,
             throw_to: ThrowTo { divisor, if_true, if_false },
             inspection_count: 0,
-            deworrier: Box::new(|old| old/3),
+            deworrier: Box::new(|old| old / 3),
         })
     }
 }

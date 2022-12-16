@@ -27,11 +27,7 @@ where
     T: Default + Clone,
 {
     pub(crate) fn new(width: usize, height: usize) -> Self {
-        Self {
-            width,
-            height,
-            data: vec![T::default(); width * height],
-        }
+        Self { width, height, data: vec![T::default(); width * height] }
     }
 
     fn in_bounds(&self, coord: GridCoord) -> bool {

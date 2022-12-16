@@ -28,7 +28,7 @@ impl From<char> for Direction {
 
 impl Coord {
     fn origin() -> Self {
-        Self::new(u32::MAX/2, u32::MAX/2)
+        Self::new(u32::MAX / 2, u32::MAX / 2)
     }
     fn new(x: u32, y: u32) -> Self {
         Self { x, y }
@@ -52,18 +52,18 @@ impl Coord {
 }
 
 #[derive(PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy, Debug)]
-struct Rope<const N:usize> {
-    knots:[Coord;N],
+struct Rope<const N: usize> {
+    knots: [Coord; N],
 }
 
-impl<const N:usize> Rope<N> {
-    fn new(pt:Coord) -> Self {
-        Self { knots:[pt;N] }
+impl<const N: usize> Rope<N> {
+    fn new(pt: Coord) -> Self {
+        Self { knots: [pt; N] }
     }
     fn move_(&mut self, d: Direction) {
         self.knots[0] = self.knots[0].move_(d);
         for n in 1..N {
-            let offset = self.knots[n].offset(&self.knots[n-1]);
+            let offset = self.knots[n].offset(&self.knots[n - 1]);
             self.knots[n] = if offset[0].1 >= 2 && offset[1].1 == 0 {
                 self.knots[n].move_(offset[0].0)
             } else if offset[1].1 >= 2 && offset[0].1 == 0 {
@@ -73,11 +73,10 @@ impl<const N:usize> Rope<N> {
             } else {
                 self.knots[n]
             }
-
         }
     }
 }
-fn evaluate<const N:usize>(s: &str) -> usize {
+fn evaluate<const N: usize>(s: &str) -> usize {
     let mut tail_points = HashSet::new();
     let mut r = Rope::<N>::new(Coord::origin());
     tail_points.insert(r.knots.last().unwrap().packed());
