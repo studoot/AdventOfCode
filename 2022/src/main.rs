@@ -1,33 +1,7 @@
 use std::env;
 use std::fmt::Display;
 
-mod grid;
-
-mod day01;
-mod day02;
-mod day03;
-mod day04;
-mod day05;
-mod day06;
-mod day07;
-mod day08;
-mod day09;
-mod day10;
-mod day11;
-mod day12;
-mod day13;
-mod day14;
-mod day15;
-mod day16;
-// mod day17;
-// mod day18;
-// mod day19;
-// mod day20;
-// mod day21;
-// mod day22;
-// mod day23;
-// mod day24;
-// mod day25;
+use aoc2022::*;
 
 fn time<T: Display, U: Display>(day_number: usize, f: &dyn Fn() -> Option<(T, bool, U, bool)>) -> u128 {
     let now = std::time::Instant::now();
@@ -61,7 +35,7 @@ fn dispatch_day(day_number: usize) -> u128 {
         14 => time(day_number, &day14::run),
         15 => time(day_number, &day15::run),
         16 => time(day_number, &day16::run),
-        // 17 => time(day_number, &day17::run),
+        17 => time(day_number, &day17::run),
         // 18 => time(day_number, &day18::run),
         // 19 => time(day_number, &day19::run),
         // 20 => time(day_number, &day20::run),
