@@ -1,6 +1,6 @@
 use once_cell::sync::OnceCell;
 struct Shape {
-    shape: Vec<(usize, usize)>,
+    shape: [u8; 4],
     width: usize,
     height: usize,
 }
@@ -11,11 +11,12 @@ impl Shape {
     fn shapes() -> &'static [Shape; 5] {
         static INSTANCE: OnceCell<[Shape; 5]> = OnceCell::new();
         INSTANCE.get_or_init(|| {
-            let dash: Shape = Shape { shape: vec![(0, 0), (1, 0), (2, 0), (3, 0)], width: 4, height: 1 };
-            let cross: Shape = Shape { shape: vec![(1, 0), (0, 1), (1, 1), (2, 1), (1, 2)], width: 3, height: 3 };
-            let l: Shape = Shape { shape: vec![(0, 0), (1, 0), (2, 0), (2, 1), (2, 2)], width: 3, height: 3 };
-            let pipe: Shape = Shape { shape: vec![(0, 0), (0, 1), (0, 2), (0, 3)], width: 1, height: 4 };
-            let block: Shape = Shape { shape: vec![(0, 0), (1, 0), (0, 1), (1, 1)], width: 2, height: 2 };
+            let dash: Shape = Shape { shape: [0b1111_0000, 0, 0, 0], width: 4, height: 1 };
+            let cross: Shape = Shape { shape: [0b0100_0000, 0b1110_0000, 0b0100_0000, 0], width: 3, height: 3 };
+            let l: Shape = Shape { shape: [0b1110_0000, 0b0010_0000, 0b0010_0000, 0], width: 3, height: 3 };
+            let pipe: Shape =
+                Shape { shape: [0b1000_0000, 0b1000_0000, 0b1000_0000, 0b1000_0000], width: 1, height: 4 };
+            let block: Shape = Shape { shape: [0b1100_0000, 0b1100_0000, 0, 0], width: 2, height: 2 };
 
             [dash, cross, l, pipe, block]
         })
@@ -23,7 +24,7 @@ impl Shape {
 }
 
 struct Sim {
-    space: Vec<[bool; SPACE_WIDTH]>,
+    space: Vec<u8>,
     shape_index: usize,
     gas: String,
     gas_index: usize,
@@ -34,24 +35,16 @@ impl Sim {
         Self { space: Vec::with_capacity(50_000_000), shape_index: 0, gas: g.to_owned(), gas_index: 0 }
     }
     fn can_move_rock_to(&self, x: usize, y: usize, shape: &Shape) -> bool {
-        if y > self.space.len() {
-            true
-        } else {
-            shape.shape.iter().all(|(offset_x, offset_y)| {
-                (y + offset_y) >= self.space.len() || !self.space[y + offset_y][x + offset_x]
-            })
-        }
+        (0..shape.height)
+            .all(|index| y + index >= self.space.len() || (shape.shape[index] >> x) & self.space[y + index] == 0)
     }
     fn place_rock(&mut self, x: usize, y: usize, shape: &Shape) {
         let new_max_y = self.space.len().max(y + shape.height);
         self.space.reserve(shape.height);
         while self.space.len() < new_max_y {
-            self.space.push([false; 7]);
+            self.space.push(0);
         }
-        shape
-            .shape
-            .iter()
-            .for_each(|(offset_x, offset_y)| self.space[y + *offset_y][x + *offset_x] = true)
+        (0..shape.height).for_each(|index| self.space[y + index] |= shape.shape[index] >> x);
     }
     fn drop_rock(&mut self) {
         let shape = &Shape::shapes()[self.shape_index];
@@ -78,9 +71,8 @@ impl Sim {
     #[allow(dead_code)]
     fn draw(&self) {
         for y in (self.space.len().saturating_sub(10)..self.space.len()).rev() {
-            let line = self.space[y]
-                .iter()
-                .map(|b| if *b { '#' } else { '.' })
+            let line = (0..7)
+                .map(|x| if self.space[y] & (0b1000_0000 >> x) == 0 { '.' } else { '#' })
                 .collect::<String>();
             println!("{line}");
             if y == 0 {
