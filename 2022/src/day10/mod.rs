@@ -35,7 +35,7 @@ fn part1_evaluate(s: &str) -> isize {
         })
         .filter_map(|(x, cycles_before, cycles_after)| {
             ((cycles_after + 20) / 40 != (cycles_before + 20) / 40)
-                .then_some(x * ((((cycles_after + 20) / 40) * 40) - 20) as isize)
+                .then_some(x * ((((cycles_after + 20) / 40) * 40) - 20))
         })
         .sum()
 }
