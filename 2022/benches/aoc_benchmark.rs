@@ -18,7 +18,7 @@ pub fn criterion_benchmark(c: &mut Criterion) {
     c.bench_function("day15", |b| b.iter(aoc2022::day15::run));
     c.bench_function("day16", |b| b.iter(aoc2022::day16::run));
     c.bench_function("day17", |b| b.iter(aoc2022::day17::run));
-    // c.bench_function("day18", |b| b.iter(aoc2022::day18::run));
+    c.bench_function("day18", |b| b.iter(aoc2022::day18::run));
     // c.bench_function("day19", |b| b.iter(aoc2022::day19::run));
     // c.bench_function("day20", |b| b.iter(aoc2022::day20::run));
     // c.bench_function("day21", |b| b.iter(aoc2022::day21::run));
