@@ -154,5 +154,5 @@ pub fn run() -> Option<(usize, bool, usize, bool)> {
     let input_string = include_str!("./input.txt");
     let part1_answer = part1_evaluate(input_string);
     let part2_answer = part2_evaluate(input_string);
-    Some((part1_answer, part1_answer == 3171, part2_answer, part2_answer == 1586627906921))
+    Some((part1_answer, part1_answer == 3171, part2_answer, part2_answer == 1_586_627_906_921))
 }

@@ -33,7 +33,7 @@ fn chars_to_id(id0: char, id1: char) -> usize {
 
 #[allow(dead_code)]
 fn id_as_string(id: usize) -> String {
-    String::from_iter([((id >> 8) as u8) as char, (id as u8) as char].iter())
+    [((id >> 8) as u8) as char, (id as u8) as char].iter().collect::<String>()
 }
 
 fn parse(s: &str) -> Vec<Valve> {

@@ -186,7 +186,7 @@ fn test_part2() {
 
 pub fn run() -> Option<(usize, bool, usize, bool)> {
     let input_string = include_str!("./input.txt");
-    let part1_answer = part1_evaluate(input_string, 2000000);
+    let part1_answer = part1_evaluate(input_string, 2_000_000);
     let part2_answer = part2_evaluate(input_string, 0..=4_000_000);
-    Some((part1_answer, part1_answer == 6425133, part2_answer, part2_answer == 10996191429555))
+    Some((part1_answer, part1_answer == 6_425_133, part2_answer, part2_answer == 10_996_191_429_555))
 }

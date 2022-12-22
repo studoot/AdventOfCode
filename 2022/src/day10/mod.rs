@@ -85,7 +85,7 @@ const TEST_INPUT_STRING: &str = include_str!("./test_input.txt");
 #[cfg(test)]
 #[test]
 fn test_part1() {
-    assert_eq!(part1_evaluate(TEST_INPUT_STRING), 13140);
+    assert_eq!(part1_evaluate(TEST_INPUT_STRING), 13_140);
 }
 
 #[test]
@@ -98,5 +98,5 @@ pub fn run() -> Option<(isize, bool, String, bool)> {
     let part1_answer = part1_evaluate(input_string);
     let part2_answer = part2_evaluate(input_string);
     let part2_answer_good = &part2_answer == include_str!("./output.txt");
-    Some((part1_answer, part1_answer == 15680, part2_answer, part2_answer_good))
+    Some((part1_answer, part1_answer == 15_680, part2_answer, part2_answer_good))
 }

@@ -41,7 +41,7 @@ fn parse_grid(input: &str) -> (Grid<GridPoint>, GridCoord, GridCoord, Vec<GridCo
                     end = Some(here);
                     *grid.cell_mut(here).unwrap() = GridPoint::new(b'z' - b'a');
                 }
-                c => panic!("Bad character {c} found in grid at {:?}", here),
+                c => panic!("Bad character {c} found in grid at {here:?}"),
             }
         }
     }

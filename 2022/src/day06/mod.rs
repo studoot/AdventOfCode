@@ -1,8 +1,8 @@
 fn all_different(bytes: &[u8]) -> bool {
     let mut found_chars: u64 = 0;
-    bytes.iter().for_each(|b| {
+    for b in bytes.iter() {
         found_chars |= 1u64 << (*b - b'a');
-    });
+    }
     found_chars.count_ones() as usize == bytes.len()
 }
 

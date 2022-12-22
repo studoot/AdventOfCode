@@ -31,11 +31,10 @@ fn mix_n<SomeType>(nums: &mut Vec<SomeType>, initial_pos: usize, num_shifts: i64
 fn part1_evaluate(s: &str) -> i64 {
     let original = parse(s);
     let mut mixed = original.clone();
-    original.iter().for_each(|i| {
+    for i in original.iter() {
         let mix_pos = mixed.iter().position(|n| i.id == n.id).unwrap();
         mix_n(&mut mixed, mix_pos, i.value);
-    });
-
+    }
     let zero_pos = mixed.iter().position(|v| v.value == 0).unwrap();
     mixed[(zero_pos + 1000) % mixed.len()].value
         + mixed[(zero_pos + 2000) % mixed.len()].value
@@ -49,11 +48,11 @@ fn part2_evaluate(s: &str) -> i64 {
         .map(|Number { id, value }| Number { id: *id, value: value * 811_589_153 })
         .collect::<Vec<_>>();
     for _ in 0..10 {
-        original.iter().for_each(|i| {
+        for i in original.iter() {
             let mix_pos = mixed.iter().position(|n| i.id == n.id).unwrap();
             let mix_value = mixed[mix_pos].value;
             mix_n(&mut mixed, mix_pos, mix_value);
-        });
+        }
     }
 
     let zero_pos = mixed.iter().position(|v| v.value == 0).unwrap();
@@ -171,12 +170,12 @@ fn test_part1() {
 
 #[test]
 fn test_part2() {
-    assert_eq!(part2_evaluate(TEST_INPUT_STRING), 1623178306);
+    assert_eq!(part2_evaluate(TEST_INPUT_STRING), 1_623_178_306);
 }
 
 pub fn run() -> Option<(i64, bool, i64, bool)> {
     let input_string = include_str!("./input.txt");
     let part1_answer = part1_evaluate(input_string);
     let part2_answer = part2_evaluate(input_string);
-    Some((part1_answer, part1_answer == 7228, part2_answer, part2_answer == 4526232706281))
+    Some((part1_answer, part1_answer == 7228, part2_answer, part2_answer == 4_526_232_706_281))
 }

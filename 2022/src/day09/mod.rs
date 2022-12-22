@@ -33,20 +33,20 @@ impl Coord {
     fn new(x: u32, y: u32) -> Self {
         Self { x, y }
     }
-    fn move_(&self, d: Direction) -> Self {
+    fn move_(self, d: Direction) -> Self {
         match d {
-            Direction::Up => Coord { y: self.y + 1, ..*self },
-            Direction::Down => Coord { y: self.y - 1, ..*self },
-            Direction::Left => Coord { x: self.x - 1, ..*self },
-            Direction::Right => Coord { x: self.x + 1, ..*self },
+            Direction::Up => Coord { y: self.y + 1, ..self },
+            Direction::Down => Coord { y: self.y - 1, ..self },
+            Direction::Left => Coord { x: self.x - 1, ..self },
+            Direction::Right => Coord { x: self.x + 1, ..self },
         }
     }
-    fn offset(&self, other: &Coord) -> [(Direction, u32); 2] {
+    fn offset(self, other: Coord) -> [(Direction, u32); 2] {
         let x_offset = (if self.x > other.x { Direction::Left } else { Direction::Right }, self.x.abs_diff(other.x));
         let y_offset = (if self.y > other.y { Direction::Down } else { Direction::Up }, self.y.abs_diff(other.y));
         [x_offset, y_offset]
     }
-    fn packed(&self) -> u64 {
+    fn packed(self) -> u64 {
         ((self.x as u64) << 32) | (self.y as u64)
     }
 }
@@ -63,7 +63,7 @@ impl<const N: usize> Rope<N> {
     fn move_(&mut self, d: Direction) {
         self.knots[0] = self.knots[0].move_(d);
         for n in 1..N {
-            let offset = self.knots[n].offset(&self.knots[n - 1]);
+            let offset = self.knots[n].offset(self.knots[n - 1]);
             self.knots[n] = if offset[0].1 >= 2 && offset[1].1 == 0 {
                 self.knots[n].move_(offset[0].0)
             } else if offset[1].1 >= 2 && offset[0].1 == 0 {

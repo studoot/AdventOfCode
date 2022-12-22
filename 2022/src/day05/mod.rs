@@ -30,9 +30,7 @@ fn parse_stacks(s: &str) -> Stacks {
 
 fn parse_move(s: &str) -> Move {
     let bits = s.split_whitespace().collect::<Vec<_>>();
-    if bits.len() != 6 {
-        panic!("Wibble - {s} => {:?}", bits);
-    }
+    assert!(bits.len() == 6, "Wibble - {s} => {bits:?}");
     Move { count: bits[1].parse().unwrap(), from: bits[3].parse().unwrap(), to: bits[5].parse().unwrap() }
 }
 
@@ -40,7 +38,7 @@ fn parse_moves(s: &str) -> Moves {
     s.lines().map(parse_move).collect::<_>()
 }
 
-fn perform_move_part1(stacks: &mut Stacks, m: Move) {
+fn perform_move_part1(stacks: &mut Stacks, m: &Move) {
     for _ in 0..m.count {
         if let Some(char_to_move) = stacks[m.from - 1].pop() {
             stacks[m.to - 1].push(char_to_move);
@@ -50,7 +48,7 @@ fn perform_move_part1(stacks: &mut Stacks, m: Move) {
     }
 }
 
-fn perform_move_part2(stacks: &mut Stacks, m: Move) {
+fn perform_move_part2(stacks: &mut Stacks, m: &Move) {
     let split_pos = stacks[m.from - 1].len() - m.count;
     let mut to_move = stacks[m.from - 1].split_off(split_pos);
     stacks[m.to - 1].append(&mut to_move);
@@ -64,10 +62,10 @@ fn parse(s: &str) -> (Stacks, Moves) {
     }
 }
 
-fn evaluate(s: &str, perform_move: fn(stacks: &mut Stacks, m: Move)) -> String {
+fn evaluate(s: &str, perform_move: fn(stacks: &mut Stacks, m: &Move)) -> String {
     let (mut stacks, moves) = parse(s);
     for m in moves {
-        perform_move(&mut stacks, m);
+        perform_move(&mut stacks, &m);
     }
     stacks
         .into_iter()

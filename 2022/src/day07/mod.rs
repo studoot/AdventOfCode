@@ -47,7 +47,7 @@ impl Dir {
                 .sum::<u64>()
     }
     fn mkfile(&mut self, size: u64) {
-        self.file_size += size
+        self.file_size += size;
     }
 }
 
@@ -138,13 +138,13 @@ $ ls
 #[test]
 fn test_part1() {
     let fs = parse(TEST_INPUT_STRING);
-    assert_eq!(part1_evaluate(&fs), 95437);
+    assert_eq!(part1_evaluate(&fs), 95_437);
 }
 
 #[test]
-fn test_part2() {
+fn test_part2() {   
     let fs = parse(TEST_INPUT_STRING);
-    assert_eq!(part2_evaluate(&fs), 24933642);
+    assert_eq!(part2_evaluate(&fs), 24_933_642);
 }
 
 pub fn run() -> Option<(u64, bool, u64, bool)> {
@@ -152,5 +152,5 @@ pub fn run() -> Option<(u64, bool, u64, bool)> {
     let fs = parse(input_string);
     let part1_answer = part1_evaluate(&fs);
     let part2_answer = part2_evaluate(&fs);
-    Some((part1_answer, part1_answer == 1648397, part2_answer, part2_answer == 1815525))
+    Some((part1_answer, part1_answer == 1_648_397, part2_answer, part2_answer == 1_815_525))
 }

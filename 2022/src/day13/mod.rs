@@ -180,5 +180,5 @@ pub fn run() -> Option<(usize, bool, usize, bool)> {
     let packets = parse(input_string);
     let part1_answer = part1_evaluate(&packets);
     let part2_answer = part2_evaluate(packets);
-    Some((part1_answer, part1_answer == 5198, part2_answer, part2_answer == 22344))
+    Some((part1_answer, part1_answer == 5198, part2_answer, part2_answer == 22_344))
 }

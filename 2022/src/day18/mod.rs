@@ -71,7 +71,7 @@ fn evaluate(s: &str) -> (usize, usize) {
     to_check.push((0, 0, 0));
     while !to_check.is_empty() {
         let (x, y, z) = to_check.pop().unwrap();
-        adjacencies.iter().for_each(|(dx, dy, dz)| {
+        for (dx, dy, dz) in adjacencies.iter() {
             let adjacent =
                 (dx.saturating_add_unsigned(x), dy.saturating_add_unsigned(y), dz.saturating_add_unsigned(z));
             if x_range.contains(&adjacent.0)
@@ -82,7 +82,7 @@ fn evaluate(s: &str) -> (usize, usize) {
                 cubes[[adjacent.0 as usize, adjacent.1 as usize, adjacent.2 as usize]] = EXTERNAL;
                 to_check.push((adjacent.0 as usize, adjacent.1 as usize, adjacent.2 as usize));
             }
-        });
+        }
     }
 
     let interface_faces = cubes

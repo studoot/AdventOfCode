@@ -219,10 +219,9 @@ fn part2_evaluate(s: &str) -> usize {
         .iter()
         .map(|m| m.throw_to.divisor)
         .product::<usize>();
-    monkeys.iter_mut().for_each(|m| {
+    for m in monkeys.iter_mut() {
         m.deworrier = Box::new(move |old| old % worry_mod_factor);
-    });
-
+    }
     for _ in 0..10_000 {
         for m in &mut monkeys {
             m.process_items(&mut items);
@@ -270,17 +269,17 @@ Monkey 3:
 #[cfg(test)]
 #[test]
 fn test_part1() {
-    assert_eq!(part1_evaluate(TEST_INPUT_STRING), 10605);
+    assert_eq!(part1_evaluate(TEST_INPUT_STRING), 10_605);
 }
 
 #[test]
 fn test_part2() {
-    assert_eq!(part2_evaluate(TEST_INPUT_STRING), 2713310158);
+    assert_eq!(part2_evaluate(TEST_INPUT_STRING), 2_713_310_158);
 }
 
 pub fn run() -> Option<(usize, bool, usize, bool)> {
     let input_string = include_str!("./input.txt");
     let part1_answer = part1_evaluate(input_string);
     let part2_answer = part2_evaluate(input_string);
-    Some((part1_answer, part1_answer == 78678, part2_answer, part2_answer == 15333249714))
+    Some((part1_answer, part1_answer == 78_678, part2_answer, part2_answer == 15_333_249_714))
 }

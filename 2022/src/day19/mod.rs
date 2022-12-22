@@ -75,7 +75,7 @@ enum TryToBuild {
     Geode,
 }
 
-fn timestep(mut time_left: usize, b: &Blueprint, mut state: State, will_build: TryToBuild) -> usize {
+fn timestep(mut time_left: usize, b: &Blueprint, mut state: State, will_build: &TryToBuild) -> usize {
     loop {
         if time_left == 0 {
             return state.geode;
@@ -127,15 +127,15 @@ fn timestep(mut time_left: usize, b: &Blueprint, mut state: State, will_build: T
             TryToBuild::Clay if state.clay_robots >= b.max_needs.clay => continue,
             TryToBuild::Obsidian if state.obsidian_robots >= b.max_needs.obsidian || state.clay_robots == 0 => continue,
             TryToBuild::Geode if state.obsidian_robots == 0 || state.clay_robots == 0 => continue,
-            _ => max_geodes = max_geodes.max(timestep(time_left, b, state.clone(), try_to_build)),
+            _ => max_geodes = max_geodes.max(timestep(time_left, b, state.clone(), &try_to_build)),
         }
     }
     max_geodes
 }
 
 fn simulate(b: &Blueprint, time_allowed: usize) -> usize {
-    let quantity_ore = timestep(time_allowed, b, State::new(), TryToBuild::Ore);
-    let quantity_clay = timestep(time_allowed, b, State::new(), TryToBuild::Clay);
+    let quantity_ore = timestep(time_allowed, b, State::new(), &TryToBuild::Ore);
+    let quantity_clay = timestep(time_allowed, b, State::new(), &TryToBuild::Clay);
     quantity_ore.max(quantity_clay)
 }
 
@@ -206,5 +206,5 @@ pub fn run() -> Option<(usize, bool, usize, bool)> {
     let input_string = include_str!("./input.txt");
     let part1_answer = part1_evaluate(input_string);
     let part2_answer = part2_evaluate(input_string);
-    Some((part1_answer, part1_answer == 1962, part2_answer, part2_answer == 88160))
+    Some((part1_answer, part1_answer == 1962, part2_answer, part2_answer == 88_160))
 }
