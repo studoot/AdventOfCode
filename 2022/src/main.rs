@@ -40,7 +40,7 @@ fn dispatch_day(day_number: usize) -> u128 {
         19 => time(day_number, &day19::run),
         20 => time(day_number, &day20::run),
         21 => time(day_number, &day21::run),
-        // 22 => time(day_number, &day22::run),
+        22 => time(day_number, &day22::run),
         // 23 => time(day_number, &day23::run),
         // 24 => time(day_number, &day24::run),
         // 25 => time(day_number, &day25::run),
