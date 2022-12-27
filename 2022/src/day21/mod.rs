@@ -233,10 +233,10 @@ fn part2_evaluate(s: &str) -> i64 {
     let my_id = Id::from_str("humn").unwrap_or_else(|e| panic!("{e}"));
     {
         let root = monkeys.monkeys.get_mut(&root_id).unwrap();
-        let Value::Operation { left_monkey, op:_, right_monkey } = root.value else {
+        let Value::Operation { left_monkey:_, ref mut op, right_monkey:_ } = root.value else {
             panic!("root isn't an expression!")
         };
-        root.value = Value::Operation { left_monkey, op: Op::Equal, right_monkey };
+        *op = Op::Equal;
     }
     let root = monkeys.monkeys.get(&root_id).unwrap();
     calculate_human_value(&monkeys, root, my_id, 1)
